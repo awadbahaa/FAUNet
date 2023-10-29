@@ -23,7 +23,8 @@ from FAUNet_Train import mynormalize
 
 import os
 
-Device = 'cuda:0'    
+Device = 'cuda:0'   
+
 
 activation = {}
 def get_activation(name):
@@ -50,9 +51,11 @@ faunet.eval()
 faunet.to(torch.device(Device))
 
 
+# this is the folder where your test images are 
+pth_images_test = "./data_set/images/val2016/"
 
-pth_images_test = "./new_test_denmark_inv/images/val2023/"
-resfolder = './new_test_denmark_inv/test/val/'
+# this is the folder where the results will be written to
+resfolder = './data_set/test_results/'
 os.makedirs(resfolder,exist_ok= True)
 
 
@@ -83,12 +86,14 @@ for ii,file_ in enumerate(file_list):
                 
                 # edges = 1.0*(edges[1,:,:]>0)
                 cv2.imwrite(resfolder + im_name+ '.png',255*im_norm)
-                # cv2.imwrite(resfolder + sim_name + '_gt_edge.png',sample[1]['edgemasks'].squeeze(0).cpu().numpy()*255)
-                # cv2.imwrite(resfolder + im_name + '_gt_mask.png',sample[1]['masks'].squeeze(0).cpu().numpy()*255)
-                # cv2.imwrite(resfolder + im_name + '_gt.png',GROUNTRUTH*255)
-                cv2.imwrite(resfolder + im_name + '_res.png',255.0*(seg[1,:,:]>0))
-                cv2.imwrite(resfolder + im_name+ '_resedge.png',255.0*(edges[1,:,:]>0))
+
+                # The resulting extent mask
+                cv2.imwrite(resfolder + im_name + '_resExtent.png',255.0*(seg[1,:,:]>0))
+
+                # The resulting edge mask
+                cv2.imwrite(resfolder + im_name+ '_resEdge.png',255.0*(edges[1,:,:]>0))
                 final_res = final_res.astype('uint8')
-                cv2.imwrite(resfolder + im_name+ '_zfinal_res.png',255.0*final_res)
-                if ii>100:
+                # this is the postprocessed result (close parcels)
+                cv2.imwrite(resfolder + im_name+ '_final_res.png',255.0*final_res)
+                if ii>5:
                     break
